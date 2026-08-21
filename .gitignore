@@ -1,0 +1,18 @@
+# Backend (Next.js/Node)
+backend-nextjs/node_modules/
+backend-nextjs/.next/
+
+# Frontend (Node)
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Env & secrets
+.env
+*.env.local
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store

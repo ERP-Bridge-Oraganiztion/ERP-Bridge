@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-graphite-200;
+  }
+  html {
+    color-scheme: light;
+  }
+  ::selection {
+    @apply bg-ink text-paper;
+  }
+  :focus-visible {
+    outline: 2px solid theme('colors.ink');
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .eyebrow {
+    @apply font-mono text-[11px] uppercase tracking-widest2 text-graphite-500;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 border border-ink px-4 py-2
+      font-body text-sm font-medium transition-colors duration-100;
+  }
+  .btn-primary {
+    @apply btn bg-ink text-paper hover:bg-graphite-800;
+  }
+  .btn-secondary {
+    @apply btn bg-paper text-ink hover:bg-graphite-100;
+  }
+  .btn-ghost {
+    @apply btn border-transparent hover:bg-graphite-100;
+  }
+  .field-label {
+    @apply mb-1.5 block font-mono text-[11px] uppercase tracking-widest2 text-graphite-600;
+  }
+  .field-input {
+    @apply w-full border border-graphite-300 bg-paper px-3 py-2 text-sm text-ink
+      placeholder:text-graphite-400 focus:border-ink;
+  }
+  .card {
+    @apply border border-graphite-200 bg-paper;
+  }
+  .data-table {
+    @apply w-full border-collapse text-left text-sm;
+  }
+  .data-table th {
+    @apply border-b border-ink px-4 py-2.5 font-mono text-[11px] uppercase tracking-widest2 text-graphite-600;
+  }
+  .data-table td {
+    @apply border-b border-graphite-200 px-4 py-3 text-graphite-900;
+  }
+  .data-table tbody tr:hover {
+    @apply bg-graphite-50;
+  }
+}
