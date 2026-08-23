@@ -117,7 +117,7 @@ model ConnectorConfig {
   username          String?
   encryptedPassword String        @db.Text
   sourceFileName    String?
-  sourceData        String?       @db.LongText
+  sourceData        String?       
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
 
@@ -174,7 +174,7 @@ model MigrationJob {
   triggeredById   Int?
   triggeredBy     User?     @relation(fields: [triggeredById], references: [id])
   createdAt       DateTime  @default(now())
-  udmData         String?   @db.LongText
+  udmData         String?  
 
   logs         MigrationLog[]
   errors       ValidationError[]
@@ -222,7 +222,7 @@ model ExportedFile {
   fileType      String       @default("CSV")
   fileSizeBytes Int
   downloadUrl   String
-  fileData      String       @db.LongText
+  fileData      String       
   expiresAt     DateTime?
   createdAt     DateTime     @default(now())
 
