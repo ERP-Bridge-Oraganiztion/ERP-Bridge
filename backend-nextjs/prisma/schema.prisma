@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider     = "mysql"
+  provider     = "postgresql"
   url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
@@ -117,7 +117,7 @@ model ConnectorConfig {
   username          String?
   encryptedPassword String        @db.Text
   sourceFileName    String?
-  sourceData        String?       @db.LongText
+  sourceData        String?       @db.Text
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
 
@@ -174,7 +174,7 @@ model MigrationJob {
   triggeredById   Int?
   triggeredBy     User?     @relation(fields: [triggeredById], references: [id])
   createdAt       DateTime  @default(now())
-  udmData         String?  @db.LongText
+  udmData         String?  @db.Text
 
   logs         MigrationLog[]
   errors       ValidationError[]
@@ -222,7 +222,7 @@ model ExportedFile {
   fileType      String       @default("CSV")
   fileSizeBytes Int
   downloadUrl   String
-  fileData      String       @db.LongText
+  fileData      String       @db.Text
   expiresAt     DateTime?
   createdAt     DateTime     @default(now())
 
