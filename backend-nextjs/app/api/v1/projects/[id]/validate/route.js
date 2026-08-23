@@ -8,6 +8,7 @@ import { parseCsv } from '@/lib/csv'
 // Always execute fresh on every request — never statically cache or serve
 // stale data for this dynamic, per-project API.
 export const dynamic = 'force-dynamic'
+export const maxDuration = 60
 
 const EMAIL_RFC5322 = /^[a-zA-Z0-9_+&*-]+(?:\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,7}$/
 const ISO_CURRENCIES = new Set(['USD', 'EUR', 'GBP', 'PKR', 'INR', 'AED', 'SAR', 'JPY', 'CNY', 'AUD', 'CAD', 'CHF', 'SGD'])
