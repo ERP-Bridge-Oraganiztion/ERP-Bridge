@@ -1,6 +1,9 @@
 {
   "functions": {
-
+    
+    "app/api/v1/projects/[id]/migration/start/route.js": {
+      "maxDuration": 60
+    },
     "app/api/v1/projects/[id]/validate/route.js": {
       "maxDuration": 60
     },
