@@ -8,6 +8,7 @@ import { parseCsv } from '@/lib/csv'
 // Always execute fresh on every request — never statically cache or serve
 // stale data for this dynamic, per-project API.
 export const dynamic = 'force-dynamic'
+export const maxDuration = 60
 
 const MAX_ROWS_PER_PUSH = 500
 
