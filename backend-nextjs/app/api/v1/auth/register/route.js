@@ -16,9 +16,12 @@ const EMAIL_RULE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export const POST = withErrorHandling(async (request) => {
   const body = await request.json().catch(() => ({}))
-  const { name, email, password, role } = body
+  const { name, organizationName, username, email, password } = body
 
   if (!name || !name.trim()) throw ApiError.badRequest('name is required.')
+  const resolvedOrganizationName = (organizationName || name || '').trim()
+  if (!resolvedOrganizationName) throw ApiError.badRequest('organizationName is required.')
+  if (!username || !/^[a-zA-Z0-9._-]{3,30}$/.test(username.trim())) throw ApiError.badRequest('Username must be 3-30 characters and contain only letters, numbers, dots, underscores or hyphens.')
   if (!email || !EMAIL_RULE.test(email)) throw ApiError.badRequest('A valid email is required.')
   if (!password || !PASSWORD_RULE.test(password)) {
     throw ApiError.badRequest(
@@ -26,23 +29,18 @@ export const POST = withErrorHandling(async (request) => {
     )
   }
 
-  const existing = await prisma.user.findUnique({ where: { email } })
+  const existing = await prisma.user.findFirst({ where: { OR: [{ email: email.trim() }, { username: username.trim() }] } })
   if (existing) {
-    throw ApiError.conflict('A user with this email already exists.')
-  }
-
-  let resolvedRole = 'VIEWER'
-  if (role) {
-    const upper = role.toUpperCase()
-    if (!VALID_ROLES.has(upper)) {
-      throw ApiError.badRequest('Invalid role. Must be one of ADMIN, PROJECT_MANAGER, CONSULTANT, VIEWER.')
-    }
-    resolvedRole = upper
+    throw ApiError.conflict('That email or username is already in use.')
   }
 
   const passwordHash = await bcrypt.hash(password, 10)
-  const user = await prisma.user.create({
-    data: { name, email, passwordHash, role: resolvedRole, status: 'ACTIVE' },
+  const user = await prisma.$transaction(async (transaction) => {
+    const organization = await transaction.organization.create({ data: { name: resolvedOrganizationName } })
+    return transaction.user.create({
+      data: { name: name.trim(), username: username.trim(), email: email.trim(), passwordHash, role: 'ADMIN', status: 'ACTIVE', organizationId: organization.id },
+      include: { organization: true },
+    })
   })
 
   await logAudit(user.id, 'REGISTER', 'AUTH', resolveClientIp(request))

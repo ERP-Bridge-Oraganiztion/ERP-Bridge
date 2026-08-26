@@ -6,11 +6,11 @@ import type { LoginResponse, User } from '@/api/types'
 export function useLogin() {
   const setSession = useAuthStore((s) => s.setSession)
   return useMutation({
-    mutationFn: async (payload: { organizationName: string; email: string; password: string }) => {
+    mutationFn: async (payload: { identifier: string; password: string; rememberMe: boolean }) => {
       const { data } = await api.post<LoginResponse>('/auth/login', payload)
       return data
     },
-    onSuccess: (data) => setSession(data.token, data.user),
+    onSuccess: (data, variables) => setSession(data.token, data.user, variables.rememberMe),
   })
 }
 

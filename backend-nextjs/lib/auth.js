@@ -21,7 +21,7 @@ export async function requireUser(request) {
     throw ApiError.unauthorized('Invalid or expired token.')
   }
 
-  const user = await prisma.user.findUnique({ where: { email: payload.sub } })
+  const user = await prisma.user.findUnique({ where: { email: payload.sub }, include: { organization: true } })
   if (!user || user.status !== 'ACTIVE') {
     throw ApiError.unauthorized('User not found or inactive.')
   }

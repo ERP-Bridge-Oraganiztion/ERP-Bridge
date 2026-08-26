@@ -13,13 +13,14 @@ export default function SettingsPage() {
   const { data: user, isLoading } = useMe()
   const qc = useQueryClient()
   const [name, setName] = useState('')
+  const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [role, setRole] = useState('VIEWER')
   const members = useQuery({ queryKey: ['organization-members'], queryFn: async () => (await api.get('/admin/users')).data, enabled: user?.role === 'ADMIN' })
   const createMember = useMutation({
-    mutationFn: async (payload: { name: string; email: string; password: string; role: string }) => (await api.post('/admin/users', payload)).data,
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['organization-members'] }); setName(''); setEmail(''); setPassword('') },
+    mutationFn: async (payload: { name: string; username: string; email: string; password: string; role: string }) => (await api.post('/admin/users', payload)).data,
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['organization-members'] }); setName(''); setUsername(''); setEmail(''); setPassword('') },
   })
   const deleteMember = useMutation({
     mutationFn: async (userId: number) => api.delete('/admin/users', { params: { userId } }),
@@ -28,7 +29,7 @@ export default function SettingsPage() {
   const resetPassword = useMutation({
     mutationFn: async ({ userId, password }: { userId: number; password: string }) => api.patch('/admin/users', { userId, password }),
   })
-  function handleCreateMember(event: FormEvent) { event.preventDefault(); createMember.mutate({ name, email, password, role }) }
+  function handleCreateMember(event: FormEvent) { event.preventDefault(); createMember.mutate({ name, username, email, password, role }) }
   function handleResetPassword(member: any) {
     const nextPassword = window.prompt(`New password for ${member.name}`)
     if (nextPassword) resetPassword.mutate({ userId: member.id, password: nextPassword })
@@ -47,6 +48,7 @@ export default function SettingsPage() {
             <dl className="space-y-4">
               {[
                 ['Name', user.name],
+                ['Organization', user.organizationName || 'Not assigned'],
                 ['Email', user.email],
                 ['Role', user.role.replace('_', ' ')],
                 ['Status', user.status],
@@ -68,6 +70,7 @@ export default function SettingsPage() {
             <p className="mb-4 text-sm text-graphite-600">Create login accounts for your office team. Members sign in with this organization name.</p>
             <form onSubmit={handleCreateMember} className="grid gap-3 sm:grid-cols-2">
               <div><FieldLabel>Member name</FieldLabel><Input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Team member name" /></div>
+              <div><FieldLabel>Username</FieldLabel><Input required value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Team username" /></div>
               <div><FieldLabel>Email</FieldLabel><Input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="member@company.com" /></div>
               <div><FieldLabel>Temporary password</FieldLabel><Input required type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Strong password" /></div>
               <div><FieldLabel>Role</FieldLabel><Select value={role} onChange={(e) => setRole(e.target.value)}><option value="VIEWER">Viewer</option><option value="CONSULTANT">Consultant</option><option value="PROJECT_MANAGER">Project Manager</option></Select></div>

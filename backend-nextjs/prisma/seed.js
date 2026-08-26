@@ -13,9 +13,10 @@ async function main() {
 
   const admin = await prisma.user.upsert({
     where: { email: 'admin@erpbridge.com' },
-    update: { organizationId: organization.id },
+    update: { organizationId: organization.id, username: 'admin' },
     create: {
       name: 'Enterprise Administrator',
+      username: 'admin',
       email: 'admin@erpbridge.com',
       passwordHash,
       role: 'ADMIN',
@@ -26,9 +27,10 @@ async function main() {
 
   await prisma.user.upsert({
     where: { email: 'pm@erpbridge.com' },
-    update: { organizationId: organization.id },
+    update: { organizationId: organization.id, username: 'projectmanager' },
     create: {
       name: 'Technical Project Manager',
+      username: 'projectmanager',
       email: 'pm@erpbridge.com',
       passwordHash,
       role: 'PROJECT_MANAGER',

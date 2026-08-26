@@ -8,6 +8,7 @@ export type Severity = 'WARNING' | 'ERROR' | 'CRITICAL'
 export interface User {
   id: number
   name: string
+  username?: string | null
   email: string
   organizationId?: number
   organizationName?: string | null

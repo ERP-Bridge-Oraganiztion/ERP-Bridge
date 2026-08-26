@@ -2,6 +2,7 @@ export function toUserResponse(u) {
   return {
     id: u.id,
     name: u.name,
+    username: u.username,
     email: u.email,
     organizationId: u.organizationId,
     organizationName: u.organization?.name || null,

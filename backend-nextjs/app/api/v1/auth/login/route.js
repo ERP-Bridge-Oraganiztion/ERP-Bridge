@@ -13,16 +13,18 @@ export const dynamic = 'force-dynamic'
 
 export const POST = withErrorHandling(async (request) => {
   const body = await request.json().catch(() => ({}))
-  const { organizationName, email, password } = body
+  const { identifier, organizationName, email, password } = body
+  const loginIdentifier = (identifier || email || '').trim()
 
-  if (!organizationName || !email || !password) {
-    throw ApiError.badRequest('organizationName, email and password are required.')
+  if (!loginIdentifier || !password) {
+    throw ApiError.badRequest('Email or username and password are required.')
   }
 
-  const organization = await prisma.organization.findUnique({ where: { name: organizationName.trim() } })
-  const user = organization
-    ? await prisma.user.findFirst({ where: { email, organizationId: organization.id }, include: { organization: true } })
-    : null
+  const organization = organizationName ? await prisma.organization.findUnique({ where: { name: organizationName.trim() } }) : null
+  const user = await prisma.user.findFirst({
+    where: { OR: [{ email: loginIdentifier }, { username: loginIdentifier }], ...(organization ? { organizationId: organization.id } : {}) },
+    include: { organization: true },
+  })
   if (!user) {
     throw ApiError.unauthorized('Invalid email or password.')
   }

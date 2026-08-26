@@ -21,13 +21,13 @@ export const POST = withErrorHandling(async (request) => {
   if (admin.role !== 'ADMIN') throw ApiError.forbidden('Only organization administrators can create members.')
   if (!admin.organizationId) throw ApiError.badRequest('Admin is not assigned to an organization.')
   const body = await request.json().catch(() => ({}))
-  const { name, email, password, role = 'VIEWER' } = body
-  if (!name?.trim() || !email?.trim() || !password) throw ApiError.badRequest('name, email and password are required.')
+  const { name, username, email, password, role = 'VIEWER' } = body
+  if (!name?.trim() || !username?.trim() || !email?.trim() || !password) throw ApiError.badRequest('name, username, email and password are required.')
   if (!PASSWORD_RULE.test(password)) throw ApiError.badRequest('Password must include upper, lower, digit, special character and be at least 8 characters.')
   if (!ROLES.has(role)) throw ApiError.badRequest('Members can be PROJECT_MANAGER, CONSULTANT, or VIEWER.')
-  const existing = await prisma.user.findFirst({ where: { organizationId: admin.organizationId, email: email.trim() } })
+  const existing = await prisma.user.findFirst({ where: { OR: [{ email: email.trim() }, { username: username.trim() }], organizationId: admin.organizationId } })
   if (existing) throw ApiError.conflict('A member with this email already exists in your organization.')
-  const user = await prisma.user.create({ data: { name: name.trim(), email: email.trim(), passwordHash: await bcrypt.hash(password, 10), role, status: 'ACTIVE', organizationId: admin.organizationId }, include: { organization: true } })
+  const user = await prisma.user.create({ data: { name: name.trim(), username: username.trim(), email: email.trim(), passwordHash: await bcrypt.hash(password, 10), role, status: 'ACTIVE', organizationId: admin.organizationId }, include: { organization: true } })
   return NextResponse.json(toUserResponse(user), { status: 201 })
 })
 
